@@ -1,0 +1,262 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DemoMvc.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - KCM-JCF Reports</title>
+
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- Optional icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DemoMvc.styles.css" asp-append-version="true" />
+    
+
+    <style>
+        /* Fuerza tamaño uniforme para el logo */
+        .navbar-brand img {
+            height: 32px;
+            width: auto;
+            transition: all 0.3s ease; /* efecto suave al cambiar */
+        }
+
+        /* Animación global para evitar flashazo */
+        body {
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+        body.fade-out {
+            opacity: 0;
+        }
+
+
+        /* Toasts independientes */
+        .toast-container {
+            z-index: 2000; /* más alto que cualquier overlay */
+            opacity: 1 !important; /* evita heredar fade */
+        }
+    </style>
+</head>
+<body class="fade-out">
+    <header>
+        <nav class="navbar navbar-expand-sm border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <!-- Logo + Brand -->
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img id="logo" src="~/uploads/signatures/logos/logo-light.png" alt="Logo" class="me-2" />
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                @{
+                    string role = string.Empty;
+                    if (SignInManager.IsSignedIn(User))
+                    {
+                        var appUser = await UserManager.GetUserAsync(User);
+                        if (appUser != null)
+                        {
+                            var roles = await UserManager.GetRolesAsync(appUser);
+                            role = roles.FirstOrDefault() ?? string.Empty;
+                        }
+                    }
+                }
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            @switch(role)
+                            {
+                                case "SysAdmin":
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">Inicio</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Index">Usuarios</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                    </li>
+                                    break;
+                                case "RI":
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="RiDashboard" asp-action="Dashboard">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="" asp-action="">Reports</a>
+                                    </li>
+                                break;
+
+                                case "Instructor":
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="InstructorDashboard" asp-action="Dashboard">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="InstructorDashboard" asp-action="MyJCFs">MyJCFs</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="InstructorDashboard" asp-action="SubmittedReports">Submitted Reports</a>
+                                    </li>
+
+                                    @* <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="WeeklyActivities" asp-action="Index">Weekly Activities</a>
+                                    </li> *@
+                                    break;
+
+                                case "JCF":
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index">Reports</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="WeeklyActivities" asp-action="Index">Weekly Activities</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Instructors" asp-action="Index">Instructors</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                    </li>
+                                    break;
+                                default:
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                    </li>
+                                    break;
+                            }
+                        }
+                    </ul>
+
+                    <!-- Authentication block -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item d-flex align-items-center me-2">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    @User.Identity?.Name
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link" style="display:inline; padding:0; border:0; background:none;">
+                                        Logout
+                                    </button>
+                                    @Html.AntiForgeryToken()
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container">
+            &copy; @DateTime.UtcNow.Year - Kimberly Clark de México - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Contenedor de toasts -->
+    @* <div class="toast-container position-fixed top-0 end-0 p-3">
+        @RenderSection("Toasts", required: false)
+    </div> *@
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Script para tema automático con logo -->
+    <script>
+        const html = document.documentElement;
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        const logo = document.getElementById('logo');
+
+        function applyTheme(e) {
+            const isDark = e.matches;
+            html.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+            logo.src = isDark 
+                ? '/uploads/logos/logo-light.png' 
+                : '/uploads/logos/logo-dark.png';
+        }
+
+        // Inicializar según preferencia del sistema
+        applyTheme(prefersDark);
+
+        // Escuchar cambios en tiempo real
+        prefersDark.addEventListener('change', applyTheme);
+
+        // Animación fade-in/fade-out
+        document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.remove("fade-out");
+        });
+        window.addEventListener("beforeunload", () => {
+            document.body.classList.add("fade-out");
+        });
+    </script>
+    
+     <!-- Contenedor de toasts independiente -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        @RenderSection("Toasts", required: false)
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl, { delay: 4000 });
+        });
+        toastList.forEach(toast => toast.show());
+    });
+</script>
+<!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function (toastEl) {
+                return new bootstrap.Toast(toastEl, { delay: 4000 });
+            });
+            toastList.forEach(toast => toast.show());
+        });
+    </script>
+
+</body>
+</html>

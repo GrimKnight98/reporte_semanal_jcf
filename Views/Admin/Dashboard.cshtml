@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Identity
+@using DemoMvc.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    // Opción rápida: usar User.IsInRole (sin llamadas a BD)
+    bool isAdmin = SignInManager.IsSignedIn(User) && User.IsInRole("SysAdmin");
+}
+<h1>@ViewData["Title"]</h1>
+<p>Bienvenido, @User.Identity.Name</p>
+<p>Rol: @ViewData["Role"]</p>
+<p>Aquí puedes gestionar el sistema, revisar estadísticas y configurar ajustes avanzados.</p>
+<ul>
+    <li><a href="/Admin/Users">Gestionar Usuarios</a></li>

@@ -1,0 +1,164 @@
+@model DemoMvc.Models.Report
+
+@{
+    ViewData["Title"] = "Detalle de Reporte Enviado";
+}
+
+<div class="container my-4">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold">Reporte #@Model.Id</span>
+            <a asp-controller="InstructorDashboard" asp-action="SubmittedReports" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+        <div class="card-body">
+
+            <!-- Sección: Fechas y Estado -->
+            <section class="mb-4">
+                <h5 class="fw-bold">Información del Reporte</h5>
+                <p><strong>Fecha inicio:</strong> @Model.StartDate.ToShortDateString()</p>
+                <p><strong>Fecha fin:</strong> @Model.EndDate.ToShortDateString()</p>
+                <p><strong>Estado:</strong>
+                    @switch (Model.Status)
+                    {
+                        case ReportStatus.SubmittedToInstructor:
+                            @:<span class="badge bg-info fs-6">Enviado a Instructor</span>
+                            break;
+                        case ReportStatus.Approved:
+                            @:<span class="badge bg-success fs-6">Aprobado</span>
+                            break;
+                        case ReportStatus.Rejected:
+                            @:<span class="badge bg-danger fs-6">Rechazado</span>
+                            break;
+                        case ReportStatus.SubmittedToRI:
+                            @:<span class="badge bg-warning text-dark fs-6">Enviado a RI</span>
+                            break;
+                    }
+                </p>
+            </section>
+
+            <!-- Sección: Actividades -->
+            <section class="mb-4">
+                <h5 class="fw-bold">Actividades</h5>
+                <div class="row">
+                    @foreach (var activity in Model.Details.SelectMany(d => d.ReportActivities))
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">@activity.WeeklyActivity?.Name</h6>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Sección: Actividades Aprendidas -->
+            <section class="mb-4">
+                <h5 class="fw-bold">Actividades Aprendidas</h5>
+                @foreach (var detail in Model.Details)
+                {
+                    if (!string.IsNullOrEmpty(detail.LearnedActivities))
+                    {
+                        var learnedList = detail.LearnedActivities.Split(';');
+                        <ul class="list-group list-group-flush">
+                            @foreach (var act in learnedList)
+                            {
+                                if (!string.IsNullOrWhiteSpace(act))
+                                {
+                                    <li class="list-group-item">• @act.Trim()</li>
+                                }
+                            }
+                        </ul>
+                    }
+                }
+            </section>
+
+            <!-- Sección: Sesiones de Entrenamiento -->
+            <section class="mb-4">
+                <h5 class="fw-bold">Sesiones de Entrenamiento</h5>
+                @if (Model.Details != null && Model.Details.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var detail in Model.Details)
+                        {
+                            <li class="list-group-item">
+                                <strong>@detail.TrainingSessions</strong>
+                                @if (!string.IsNullOrEmpty(detail.Observations))
+                                {
+                                    <div class="text-muted">Obs: @detail.Observations</div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No hay sesiones registradas.</p>
+                }
+            </section>
+
+            <!-- Sección: Acciones -->
+            <section class="mt-4 d-flex justify-content-end">
+                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#authorizeModal">
+                    <i class="fas fa-check"></i> Autorizar
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                    <i class="fas fa-times"></i> Rechazar
+                </button>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Autorizar -->
+<div class="modal fade" id="authorizeModal" tabindex="-1" aria-labelledby="authorizeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="authorizeModalLabel">Confirmar autorización</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que deseas autorizar este reporte?
+      </div>
+      <div class="modal-footer">
+        <form asp-controller="Reports" asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-targetStatus="Approved" method="post" class="d-inline">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> Sí, autorizar
+            </button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal Rechazar -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="rejectModalLabel">Confirmar rechazo</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que deseas rechazar este reporte?
+      </div>
+      <div class="modal-footer">
+        <form asp-controller="Reports" asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-targetStatus="Rejected" method="post" class="d-inline">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-times"></i> Sí, rechazar
+            </button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

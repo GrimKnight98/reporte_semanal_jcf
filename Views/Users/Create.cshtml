@@ -1,0 +1,114 @@
+@using DemoMvc.Models
+@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Crear Usuario";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm mb-4 border-success">
+            <div class="card-header d-flex justify-content-between align-items-center bg-success bg-opacity-25 text-success fw-bold">
+                <span>
+                    <i class="fas fa-user-plus"></i> Nuevo Usuario
+                </span>
+                <a asp-action="Index" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista
+                </a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <!-- Columna izquierda -->
+                        <div class="col-md-6">
+                            <!-- PersonNumber -->
+                            <div class="mb-3">
+                                <label asp-for="PersonNumber" class="form-label fw-bold"></label>
+                                <input asp-for="PersonNumber" class="form-control" placeholder="Número de persona" required />
+                                <span asp-validation-for="PersonNumber" class="text-danger"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Correo" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold">Contraseña</label>
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required />
+                            </div>
+
+                            <!-- FirstName -->
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label fw-bold">Nombre</label>
+                                <input type="text" name="firstName" id="firstName" class="form-control" placeholder="Nombre" />
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha -->
+                        <div class="col-md-6">
+                            <!-- LastName -->
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label fw-bold">Apellido</label>
+                                <input type="text" name="lastName" id="lastName" class="form-control" placeholder="Apellido" />
+                            </div>
+
+                            <!-- FullName (autocompletado) -->
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label fw-bold">Nombre Completo</label>
+                                <input type="text" name="fullName" id="fullName" class="form-control" placeholder="Nombre completo" readonly />
+                            </div>
+
+                            <!-- Rol -->
+                            <div class="mb-3">
+                                <label for="selectedRole" class="form-label fw-bold">Rol</label>
+                                <select name="selectedRole" id="selectedRole" class="form-select" asp-items="ViewBag.Roles">
+                                    <option value="">-- Seleccione un rol --</option>
+                                </select>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <label asp-for="IsActive" class="form-label fw-bold">Estado</label>
+                                <select asp-for="IsActive" class="form-select">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success shadow-sm">
+                            <i class="fas fa-save"></i> Crear
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                Complete el formulario para registrar un nuevo usuario.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        // Autocompletar FullName a partir de FirstName + LastName
+        function updateFullName() {
+            var first = document.getElementById("firstName").value;
+            var last = document.getElementById("lastName").value;
+            document.getElementById("fullName").value = (first + " " + last).trim();
+        }
+
+        document.getElementById("firstName").addEventListener("input", updateFullName);
+        document.getElementById("lastName").addEventListener("input", updateFullName);
+    </script>
+}

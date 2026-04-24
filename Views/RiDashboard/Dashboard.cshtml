@@ -1,0 +1,123 @@
+@model DemoMvc.Models.RiDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard RI";
+}
+
+<div class="container mt-5">
+    <h1 class="display-4 fw-bold mb-4">Dashboard RI</h1>
+    <p class="lead">Panel de control para Relaciones Industriales</p>
+
+    <!-- Cards métricas -->
+    <div class="row g-4 mt-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-people-fill display-4 text-primary"></i>
+                    <h5 class="mt-3">JCF Activos</h5>
+                    <p class="fw-bold fs-4">@Model.JcfActivos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-send-check-fill display-4 text-success"></i>
+                    <h5 class="mt-3">Enviados (Semana)</h5>
+                    <p class="fw-bold fs-4">@Model.ReportesEnviadosSemana</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-file-earmark-excel-fill display-4 text-warning"></i>
+                    <h5 class="mt-3">No enviados (Semana)</h5>
+                    <p class="fw-bold fs-4">@Model.ReportesNoEnviadosSemana</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-triangle-fill display-4 text-danger"></i>
+                    <h5 class="mt-3">Atrasados (Semana)</h5>
+                    <p class="fw-bold fs-4">@Model.ReportesAtrasadosSemana</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla detalle -->
+    <div class="mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Detalle JCF Activos</span>
+                <div>
+                    <a href="#" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-file-export"></i> Exportar
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-body-tertiary">
+                            <tr>
+                                <th>JCF</th>
+                                <th>Instructor</th>
+                                <th>Último Reporte</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Detalles != null && Model.Detalles.Any())
+                            {
+                                @foreach (var item in Model.Detalles)
+                                {
+                                    <tr>
+                                        <td>@item.Jcf</td>
+                                        <td>@item.Instructor</td>
+                                        <td>@item.UltimoReporte.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (item.Estado == "Al día")
+                                            {
+                                                <span class="badge bg-success">Al día</span>
+                                            }
+                                            else if (item.Estado == "Pendiente")
+                                            {
+                                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Atrasado</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No hay JCF registrados.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span>Total de JCF activos: @Model.JcfActivos</span>
+                <nav>
+                    <ul class="pagination mb-0">
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Dashboard" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

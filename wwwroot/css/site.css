@@ -1,0 +1,62 @@
+/* html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+} */
+ /* Base font size */
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Body spacing */
+body {
+  margin-bottom: 60px;
+}
+
+/* Botones: estados de foco */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem #fff, 0 0 0 0.25rem #258cfb;
+  outline: none; /* elimina borde azul por defecto */
+}
+
+/* Responsive buttons: solo iconos en pantallas pequeñas */
+@media (max-width: 576px) {
+  .action-buttons .btn-text {
+    display: none; /* Oculta el texto */
+  }
+  .action-buttons .btn {
+    padding: 0.4rem 0.5rem; /* Botón más compacto */
+  }
+  .action-buttons i {
+    margin: 0; /* Centra el ícono */
+  }
+}

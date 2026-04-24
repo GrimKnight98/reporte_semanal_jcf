@@ -1,0 +1,78 @@
+@model IEnumerable<DemoMvc.Models.Report>
+
+@{
+    ViewData["Title"] = "Reportes Enviados";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="col-md-11">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Reportes Enviados por JCF Asignados</span>
+                <a asp-action="Index" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="border-bottom">
+                                <tr class="fw-bold">
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Fecha inicio</th>
+                                    <th scope="col">Fecha fin</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Creado por</th>
+                                    <th scope="col" class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model)
+                                {
+                                    <tr>
+                                        <td>@report.Id</td>
+                                        <td>@report.StartDate.ToShortDateString()</td>
+                                        <td>@report.EndDate.ToShortDateString()</td>
+                                        <td>
+                                            @switch (report.Status)
+                                            {
+                                                case ReportStatus.SubmittedToInstructor:
+                                                    @:<span class="badge bg-info">Enviado a Instructor</span>
+                                                    break;
+                                                case ReportStatus.Approved:
+                                                    @:<span class="badge bg-success">Aprobado</span>
+                                                    break;
+                                                case ReportStatus.Rejected:
+                                                    @:<span class="badge bg-danger">Rechazado</span>
+                                                    break;
+                                                case ReportStatus.SubmittedToRI:
+                                                    @:<span class="badge bg-warning text-dark">Enviado a RI</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>@report.CreatedBy?.UserName</td>
+                                        <td class="text-end">
+                                            <a asp-controller="InstructorDashboard" asp-action="SubmittedReportDetails" asp-route-id="@report.Id" 
+                                            class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No hay reportes enviados disponibles para tus JCF asignados.</p>
+                }
+            </div>
+            <div class="card-footer text-muted">
+                Estos reportes corresponden a los JCF que tienes asignados y están listos para revisión.
+            </div>
+        </div>
+    </div>
+</div>

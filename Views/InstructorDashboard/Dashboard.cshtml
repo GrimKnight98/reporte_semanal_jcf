@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Dashboard Instructor";
+    var userName = User.Identity.Name ?? "Usuario";
+    var userRole = "Instructor"; 
+}
+
+<div class="container mt-4">
+    <!-- Mensaje de bienvenida -->
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Hola, @userName</h4>
+        <p>Rol: @userRole</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="row">
+        <!-- Card JCF -->
+        <div class="col-md-6">
+            <div class="card text-center">
+                <!-- Guinda personalizado -->
+                <div class="card-header text-white" style="background-color:#800020;">
+                    Jóvenes Construyendo el Futuro
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Número de JCF asignados</h5>
+                    <p class="display-4">12</p> <!-- dato dummy -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Reportes -->
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-header bg-warning text-dark">
+                    Reportes enviados
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Reportes en aprobación</h5>
+                    <p class="display-4">3</p> <!-- dato dummy -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

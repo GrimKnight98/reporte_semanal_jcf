@@ -1,0 +1,56 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Perfil";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- Formulario de perfil -->
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Username" class="form-control" placeholder="Usuario" disabled />
+                <label asp-for="Username" class="form-label"></label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Teléfono" />
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">
+                Guardar cambios
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <!-- Formulario de firma -->
+        <form method="post" enctype="multipart/form-data" asp-page-handler="UploadSignature">
+            <div class="mb-3">
+                <label for="SignatureFile" class="form-label">Subir firma</label>
+                <input type="file" name="SignatureFile" class="form-control" accept="image/*" />
+            </div>
+            <button type="submit" class="btn btn-secondary">Guardar firma</button>
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.SignaturePath))
+        {
+            <div class="mt-3">
+                <p>Firma actual:</p>
+                <img src="@Model.SignaturePath" alt="Firma" style="height:80px;" />
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

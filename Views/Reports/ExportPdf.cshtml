@@ -1,0 +1,24 @@
+@model DemoMvc.Models.Report
+
+<div style="font-family: Arial; padding: 20px;">
+    <h2 style="text-align:center;">Kimberly-Clark de México</h2>
+    <h3 style="text-align:center;">Bitácora semanal<br/>"Jóvenes Construyendo el Futuro"</h3>
+
+    <p><strong>Fecha:</strong> @Model.StartDate.ToShortDateString() - @Model.EndDate.ToShortDateString()</p>
+
+    <p><strong>¿Qué actividades realizaste en esta semana?</strong></p>
+    <p>@string.Join(", ", @Model.Details.SelectMany(d => d.ReportActivities.Select(ra => ra.WeeklyActivity.Name)))</p>
+
+    <p><strong>Cuéntanos qué aprendiste:</strong></p>
+    <p>@Model.Details.FirstOrDefault()?.LearnedActivities</p>
+
+    <p><strong>¿Tuviste dudas? ¿Quién te ayudó a resolverlas?</strong></p>
+    <p>@Model.Details.FirstOrDefault()?.Observations</p>
+
+    <p><strong>¿Recibiste capacitación, pláticas o algún taller?</strong></p>
+    <p>@Model.Details.FirstOrDefault()?.TrainingSessions</p>
+
+    <br/><br/>
+    <p><strong>Tu nombre completo y firma:</strong> ____________________________</p>
+    <p><strong>Nombre completo y firma del tutor:</strong> ____________________________</p>
+</div>

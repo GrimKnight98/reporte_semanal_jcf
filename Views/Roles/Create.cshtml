@@ -1,0 +1,45 @@
+@using Microsoft.AspNetCore.Identity
+@model IdentityRole
+
+@{
+    ViewData["Title"] = "Crear Rol";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm mb-4 border-success">
+            <div class="card-header d-flex justify-content-between align-items-center bg-success bg-opacity-25 text-success fw-bold">
+                <span>
+                    <i class="fas fa-plus-circle"></i> Nuevo Rol
+                </span>
+                <a asp-action="Index" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista
+                </a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label for="roleName" class="form-label fw-bold">Nombre del Rol</label>
+                        <input type="text" name="roleName" id="roleName" class="form-control" placeholder="Ingrese el nombre del rol" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success shadow-sm">
+                            <i class="fas fa-save"></i> Crear
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                Complete el formulario para registrar un nuevo rol.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

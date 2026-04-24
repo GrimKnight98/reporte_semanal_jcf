@@ -1,0 +1,156 @@
+@model DemoMvc.Models.WeeklyActivitiesIndexViewModel
+
+@{
+    ViewData["Title"] = "Actividades semanales";
+}
+
+<h1 class="mb-4">Actividades semanales</h1>
+
+<div class="row">
+    <!-- Panel lateral de búsqueda -->
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white fw-bold">
+                Buscar Actividades
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="get">
+                    <div class="input-group">
+                        <input type="text" name="search" value="@Context.Request.Query["search"]"
+                               class="form-control" placeholder="Nombre o descripción" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+                @if (!string.IsNullOrWhiteSpace(Context.Request.Query["search"]))
+                {
+                    <div class="mt-3">
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary w-100">
+                            <i class="fas fa-list"></i> Ver todas
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel principal -->
+    <div class="col-md-9">
+        <form asp-action="BulkDelete" method="post" id="bulkDeleteForm">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-success bg-opacity-25 text-success fw-bold">
+                    <span>Lista de Actividades</span>
+                    <div>
+                        <a asp-action="Create" class="btn btn-sm btn-success me-2">
+                            <i class="fas fa-plus"></i> Nueva Actividad
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmBulkDeleteModal">
+                            <i class="fas fa-trash-alt"></i> Eliminar seleccionadas
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-header-success">
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" /></th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Creado por</th>
+                                    <th>Fecha creación</th>
+                                    <th>Última actualización</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.Activities != null && Model.Activities.Any())
+                            {
+                                foreach (var activity in Model.Activities)
+                                {
+                                    <tr>
+                                        <td><input type="checkbox" name="ids" value="@activity.Id" class="selectItem" /></td>
+                                        <td>@activity.Name</td>
+                                        <td>@activity.Description</td>
+                                        <td>@activity.CreatedByUser?.Email</td>
+                                        <td>@activity.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@(activity.UpdatedAt.HasValue ? activity.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                                        <td class="text-end">
+                                            <a asp-action="Edit" asp-route-id="@activity.Id" class="btn btn-sm btn-outline-warning me-1">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@activity.Id" class="btn btn-sm btn-outline-info me-1">
+                                                <i class="fas fa-eye"></i> Detalles
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@activity.Id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No hay actividades registradas.</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    @if (!string.IsNullOrWhiteSpace(Context.Request.Query["search"]))
+                    {
+                        <span>Mostrando @Model.Activities.Count() de @Model.TotalCount actividades encontradas</span>
+                    }
+                    else
+                    {
+                        <span>Total de actividades: @Model.TotalCount</span>
+                    }
+                    <nav>
+                        <ul class="pagination mb-0">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@Context.Request.Query["search"]">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmBulkDeleteModal" tabindex="-1" aria-labelledby="confirmBulkDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmBulkDeleteLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar las actividades seleccionadas? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="bulkDeleteForm" class="btn btn-danger">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function() {
+            var checkboxes = document.querySelectorAll('.selectItem');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+    </script>
+}

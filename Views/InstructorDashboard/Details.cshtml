@@ -1,0 +1,91 @@
+@model DemoMvc.Models.InstructorJcfAssignment
+
+@{
+    ViewData["Title"] = "Detalles de Asignación";
+}
+
+<h1 class="mb-4">Detalles de la Asignación</h1>
+
+<!-- Card guinda: información del JCF -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header text-white fw-bold" style="background-color:#800000;">
+        Información del JCF Asignado
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.Jcf?.FirstName</dd>
+
+            <dt class="col-sm-3">Apellidos</dt>
+            <dd class="col-sm-9">@Model.Jcf?.LastName</dd>
+
+            <dt class="col-sm-3">Usuario</dt>
+            <dd class="col-sm-9">@Model.Jcf?.UserName</dd>
+
+            <dt class="col-sm-3">Person Number</dt>
+            <dd class="col-sm-9">@Model.Jcf?.PersonNumber</dd>
+
+            <dt class="col-sm-3">Correo</dt>
+            <dd class="col-sm-9">@Model.Jcf?.Email</dd>
+
+            <dt class="col-sm-3">Teléfono</dt>
+            <dd class="col-sm-9">@Model.Jcf?.PhoneNumber</dd>
+
+            <dt class="col-sm-3">Fecha inicio</dt>
+            <dd class="col-sm-9">@Model.EffectiveStartDate.ToShortDateString()</dd>
+
+            <dt class="col-sm-3">Fecha fin</dt>
+            <dd class="col-sm-9">
+                @(Model.EffectiveEndDate.HasValue 
+                    ? Model.EffectiveEndDate.Value.ToShortDateString() 
+                    : "—")
+            </dd>
+
+            <dt class="col-sm-3">Estado</dt>
+            <dd class="col-sm-9">
+                @if (Model.Status == "Activo")
+                {
+                    <span class="badge bg-success"><i class="fas fa-check"></i> Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger"><i class="fas fa-times"></i> Inactivo</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Observaciones</dt>
+            <dd class="col-sm-9">@Model.Observaciones</dd>
+        </dl>
+    </div>
+</div>
+
+<!-- Card amarillo: información del usuario admin -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header fw-bold" style="background-color:#FFD700;">
+        Información del Usuario que creó la asignación
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.CreatedByUser?.FirstName</dd>
+
+            <dt class="col-sm-3">Apellidos</dt>
+            <dd class="col-sm-9">@Model.CreatedByUser?.LastName</dd>
+
+            <dt class="col-sm-3">Usuario</dt>
+            <dd class="col-sm-9">@Model.CreatedByUser?.UserName</dd>
+
+            <dt class="col-sm-3">Correo</dt>
+            <dd class="col-sm-9">@Model.CreatedByUser?.Email</dd>
+
+            <dt class="col-sm-3">Fecha del movimiento</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="text-end">
+    <a asp-action="MyJCFs" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+</div>

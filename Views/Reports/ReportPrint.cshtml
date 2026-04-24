@@ -1,0 +1,170 @@
+@model DemoMvc.Models.Report
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Bitácora semanal - @Model.CreatedBy?.FullName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            margin: 0.8cm; /* margen más pequeño */
+        }
+        .page {
+            border: 1px solid #000; /* borde más delgado */
+            padding: 8px;           /* menos espacio interno */
+            page-break-inside: avoid;
+            position: relative;
+            min-height: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .header img {
+            max-height: 60px;
+            margin-bottom: 5px;
+        }
+        .title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .note {
+            font-size: 10pt;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .date {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .section {
+            margin-bottom: 15px;
+        }
+        .question {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .line {
+            border-bottom: 1px solid #000;
+            min-height: 35px;
+            margin-bottom: 10px;
+            padding: 4px;
+        }
+        .signature-block {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .signature {
+            display: inline-block;
+            width: 40%;
+            margin: 0 4%;
+            vertical-align: top;
+        }
+        .signature img {
+            max-height: 70px;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 15px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 9pt;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="header">
+        <img src="/uploads/logos/logo-dark.png" alt="Kimberly-Clark de México" />
+    </div>
+    <div class="title">Bitácora semanal<br />"Jóvenes Construyendo el Futuro"</div>
+    <div class="note">
+        Nota: Este formato nos ayudará a trabajar mejor para ti, tus dudas, comentarios o aclaraciones hacen que seamos un mejor equipo de trabajo.
+    </div>
+    <div class="date">
+        Fecha: @Model.StartDate.ToShortDateString() - @Model.EndDate.ToShortDateString()
+    </div>
+
+    <div class="section">
+        <div class="question">¿Qué actividades realizaste en esta semana?</div>
+        <div class="line">
+            @foreach (var detail in Model.Details)
+            {
+                if (detail.ReportActivities != null)
+                {
+                    <span>@string.Join(", ", detail.ReportActivities.Select(a => a.WeeklyActivity.Name))</span>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="question">Cuéntanos qué aprendiste:</div>
+        <div class="line">
+            @foreach (var detail in Model.Details)
+            {
+                <span>@detail.LearnedActivities</span>
+            }
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="question">¿Tuviste dudas? ¿Quién te ayudó a resolverlas?</div>
+        <div class="line">
+            @foreach (var detail in Model.Details)
+            {
+                <span>@detail.Observations</span>
+            }
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="question">En esta semana ¿recibiste capacitación, pláticas o algún taller? Cuéntanos de qué:</div>
+        <div class="line">
+            @foreach (var detail in Model.Details)
+            {
+                <span>@detail.TrainingSessions</span>
+            }
+        </div>
+    </div>
+
+    <div class="signature-block">
+        <div class="signature">
+            @if (!string.IsNullOrEmpty(Model.CreatedBy?.SignaturePath))
+            {
+                <img src="@Url.Content(Model.CreatedBy.SignaturePath)" alt="Firma aprendiz" />
+            }
+            <div class="signature-line"></div>
+            <p>@Model.CreatedBy?.FullName<br />Tú nombre completo y firma</p>
+        </div>
+        <div class="signature">
+            @if (!string.IsNullOrEmpty(Model.ApprovedBy?.SignaturePath))
+            {
+                <img src="@Url.Content(Model.ApprovedBy.SignaturePath)" alt="Firma tutor" />
+            }
+            <div class="signature-line"></div>
+            <p>@Model.ApprovedBy?.FullName<br />Nombre completo y firma del tutor</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        Kimberly-Clark ha determinado la clasificación de esta información como "Pública"
+    </div>
+</div>
+</body>
+</html>

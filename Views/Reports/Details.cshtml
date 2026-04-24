@@ -1,0 +1,203 @@
+@model DemoMvc.Models.Report
+
+@{
+    ViewData["Title"] = "Detalles del Reporte";
+}
+
+<h1 class="mb-4">Detalles del Reporte</h1>
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <!-- Información del Reporte -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white fw-bold">
+                Información del Reporte
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Fecha inicio</dt>
+                    <dd class="col-sm-9">@Model.StartDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-3">Fecha fin</dt>
+                    <dd class="col-sm-9">@Model.EndDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-3">Estado</dt>
+                    <dd class="col-sm-9">
+                        @switch (Model.Status)
+                        {
+                            case ReportStatus.Draft:
+                                @:<span class="badge bg-secondary">Borrador</span>
+                                break;
+                            case ReportStatus.SubmittedToInstructor:
+                                @:<span class="badge bg-info">Enviado a Instructor</span>
+                                break;
+                            case ReportStatus.Approved:
+                                @:<span class="badge bg-success">Aprobado</span>
+                                break;
+                            case ReportStatus.SubmittedToRI:
+                                @:<span class="badge bg-warning">Enviado a RI</span>
+                                break;
+                            case ReportStatus.Rejected:
+                                @:<span class="badge bg-danger">Rechazado</span>
+                                break;
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Creado por</dt>
+                    <dd class="col-sm-9">@Model.CreatedBy?.UserName</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Detalles del Reporte -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white fw-bold">
+                Detalles del Reporte
+            </div>
+            <div class="card-body">
+                @if (Model.Details != null && Model.Details.Any())
+                {
+                    @foreach (var detail in Model.Details)
+                    {
+                        <div class="card mb-3 border-0 border-start border-4 border-primary">
+                            <div class="card-body">
+                                <!-- Actividades semanales primero -->
+                                <h5 class="card-title text-primary mb-3">
+                                    <i class="fas fa-calendar-week"></i> Actividades semanales
+                                </h5>
+                                @if (detail.ReportActivities != null && detail.ReportActivities.Any())
+                                {
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var act in detail.ReportActivities)
+                                        {
+                                            <span class="badge bg-light text-dark border">
+                                                @act.WeeklyActivity.Name
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Sin actividades</p>
+                                }
+
+                                <!-- Actividades aprendidas -->
+                                <h6 class="fw-bold mt-4">
+                                    <i class="fas fa-book-open"></i> Actividades aprendidas
+                                </h6>
+                                <p>@detail.LearnedActivities</p>
+
+                                <!-- Sesiones de entrenamiento -->
+                                <h6 class="fw-bold mt-3">
+                                    <i class="fas fa-chalkboard-teacher"></i> Sesiones de entrenamiento
+                                </h6>
+                                <p>@detail.TrainingSessions</p>
+
+                                <!-- Observaciones -->
+                                <h6 class="fw-bold mt-3">
+                                    <i class="fas fa-comment-dots"></i> Observaciones
+                                </h6>
+                                <p>@detail.Observations</p>
+
+                                <!-- Botón Editar actividades -->
+                                <div class="mt-3 text-end">
+                                    @if (Model.Status == ReportStatus.Draft || Model.Status == ReportStatus.Rejected)
+                                    {
+                                        <a asp-action="Edit" asp-controller="ReportDetails" asp-route-id="@detail.Id" 
+                                           class="btn btn-sm btn-outline-warning" title="Editar actividades">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Este reporte aún no tiene detalles.</p>
+                    <a asp-action="Create" asp-controller="ReportDetails" asp-route-reportId="@Model.Id" 
+                       class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Agregar Detalle
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Acciones dinámicas -->
+        <div class="d-flex justify-content-end flex-wrap gap-2">
+    <!-- Botón Volver -->
+    <a asp-action="Index" asp-controller="Reports" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+    </a>
+
+    @switch (Model.Status)
+    {
+        case ReportStatus.Draft:
+            {
+                <a asp-action="Edit" asp-controller="Reports" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                    <i class="fas fa-edit"></i> Editar Cabecera
+                </a>
+                <a asp-action="Delete" asp-controller="Reports" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                    <i class="fas fa-trash-alt"></i> Eliminar Reporte
+                </a>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmSubmitModal">
+                    <i class="fas fa-paper-plane"></i> Concluir y Enviar
+                </button>
+                break;
+            }
+        case ReportStatus.Approved:
+            {
+                <!-- Botón Vista de impresión -->
+                <a asp-action="ReportPrint" asp-controller="Reports" asp-route-id="@Model.Id" 
+                   class="btn btn-outline-dark" target="_blank">
+                    <i class="fas fa-print"></i> Vista de impresión
+                </a>
+
+                <!-- Botón Enviar a RI -->
+                <form asp-action="UpdateStatus" asp-controller="Reports" asp-route-id="@Model.Id" asp-route-targetStatus="SubmittedToRI" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar a RI
+                    </button>
+                </form>
+                break;
+            }
+        case ReportStatus.Rejected:
+            {
+                <a asp-action="Edit" asp-controller="Reports" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                    <i class="fas fa-edit"></i> Editar Cabecera
+                </a>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmSubmitModal">
+                    <i class="fas fa-paper-plane"></i> Reenviar a Instructor
+                </button>
+                break;
+            }
+    }
+</div>
+
+
+        <!-- Modal confirmación envío -->
+        <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="confirmSubmitLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="confirmSubmitLabel">Confirmar envío</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body text-center">
+                <p>¿Seguro que deseas enviar este reporte al instructor?<br />
+                Una vez enviado, ya no podrás editarlo.</p>
+              </div>
+              <div class="modal-footer justify-content-center">
+                <form asp-action="UpdateStatus" asp-controller="Reports" asp-route-id="@Model.Id" asp-route-targetStatus="SubmittedToInstructor" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> Sí, enviar
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
