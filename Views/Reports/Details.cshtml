@@ -22,6 +22,7 @@
                     <dd class="col-sm-9">@Model.EndDate.ToShortDateString()</dd>
 
                     <dt class="col-sm-3">Estado</dt>
+                    
                     <dd class="col-sm-9">
                         @switch (Model.Status)
                         {
@@ -55,6 +56,51 @@
                 Detalles del Reporte
             </div>
             <div class="card-body">
+                @if (Model.Status == ReportStatus.Rejected &&
+    !string.IsNullOrEmpty(Model.RejectionComment))
+{
+    <div class="card mb-4 border-0 border-start border-4 border-danger shadow-sm">
+        <div class="card-body">
+
+            <div class="d-flex align-items-start gap-3">
+
+                <div class="text-danger fs-3">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+
+                        <div>
+                            <h5 class="mb-1 text-danger fw-bold">
+                                Motivo del rechazo
+                            </h5>
+
+                            <small class="text-muted">
+                                Observaciones realizadas por el instructor
+                            </small>
+                        </div>
+
+                        <span class="badge bg-danger-subtle text-danger border px-3 py-2">
+                            Requiere corrección
+                        </span>
+
+                    </div>
+
+                    <div class="border rounded-3 p-3 bg-body-tertiary">
+                        <div class="text-body-secondary">
+                            @Model.RejectionComment
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
                 @if (Model.Details != null && Model.Details.Any())
                 {
                     @foreach (var detail in Model.Details)
@@ -89,13 +135,13 @@
 
                                 <!-- Sesiones de entrenamiento -->
                                 <h6 class="fw-bold mt-3">
-                                    <i class="fas fa-chalkboard-teacher"></i> Sesiones de entrenamiento
+                                    <i class="fas fa-chalkboard-teacher"></i> En esta semana ¿recibiste capacitación, platicas o algún taller? Cuéntanos de que:
                                 </h6>
                                 <p>@detail.TrainingSessions</p>
 
                                 <!-- Observaciones -->
                                 <h6 class="fw-bold mt-3">
-                                    <i class="fas fa-comment-dots"></i> Observaciones
+                                    <i class="fas fa-comment-dots"></i> ¿Tuviste dudas? ¿Quién te ayudo a resolverlas?
                                 </h6>
                                 <p>@detail.Observations</p>
 

@@ -1,4 +1,4 @@
-@model IEnumerable<DemoMvc.Models.Report>
+@model DemoMvc.ViewModels.Reports.ReportPagedViewModel
 
 @{
     ViewData["Title"] = "Reportes";
@@ -7,38 +7,114 @@
 <h1 class="mb-4">Reportes</h1>
 
 <div class="row">
-    <div class="col-md-12">
+
+    <!-- 🔍 PANEL DE FILTROS -->
+    <div class="col-md-3">
         <div class="card shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <span class="fw-bold">Lista de Reportes</span>
-                <div>
-                    <a asp-action="Create" class="btn btn-sm btn-success">
-                        <i class="fas fa-plus"></i> Nuevo Reporte
-                    </a>
-                </div>
+            <div class="card-header bg-primary text-white fw-bold">
+                Filtros
             </div>
             <div class="card-body">
+
+                <form asp-action="Index" method="get">
+
+                    <!-- Status -->
+                    <div class="mb-3">
+                        <label class="form-label">Estatus</label>
+                        <select name="status" class="form-select">
+                            <option value="">Todos</option>
+                            @foreach (var s in Enum.GetValues(typeof(DemoMvc.Models.ReportStatus)))
+                            {
+                                <option value="@s">
+    @(s.ToString() switch
+    {
+        "Draft" => "Borrador",
+        "SubmittedToInstructor" => "Enviado a Instructor",
+        "Approved" => "Aprobado",
+        "SubmittedToRI" => "Enviado a RI",
+        "Rejected" => "Rechazado",
+        _ => s.ToString()
+    })
+</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Fecha inicio -->
+                    <div class="mb-3">
+                        <label class="form-label">Fecha inicio</label>
+                        <input type="date" name="startDate"
+                               value="@(Model.StartDate?.ToString("yyyy-MM-dd"))"
+                               class="form-control" />
+                    </div>
+
+                    <!-- Fecha fin -->
+                    <div class="mb-3">
+                        <label class="form-label">Fecha fin</label>
+                        <input type="date" name="endDate"
+                               value="@(Model.EndDate?.ToString("yyyy-MM-dd"))"
+                               class="form-control" />
+                    </div>
+
+                    <!-- PageSize -->
+                    <div class="mb-3">
+                        <label class="form-label">Registros por página</label>
+                        <select name="pageSize" class="form-select">
+                            <option value="5" selected="@(Model.PageSize == 5)">5</option>
+                            <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                            <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        Filtrar
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                        Limpiar
+                    </a>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 TABLA -->
+    <div class="col-md-9">
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <span class="fw-bold">Lista de Reportes</span>
+                <a asp-action="Create" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Nuevo Reporte
+                </a>
+            </div>
+
+            <div class="card-body">
+
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Fecha inicio</th>
-                                <th>Fecha fin</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
                                 <th>Estado</th>
                                 <th>Creado por</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                        @if (Model != null && Model.Any())
+                        @if (Model.Items.Any())
                         {
-                            @foreach (var report in Model)
+                            @foreach (var report in Model.Items)
                             {
                                 <tr>
                                     <td>@report.Id</td>
                                     <td>@report.StartDate.ToShortDateString()</td>
                                     <td>@report.EndDate.ToShortDateString()</td>
+
                                     <td>
                                         @switch (report.Status)
                                         {
@@ -46,46 +122,49 @@
                                                 @:<span class="badge bg-secondary">Borrador</span>
                                                 break;
                                             case ReportStatus.SubmittedToInstructor:
-                                                @:<span class="badge bg-info">Enviado a Instructor</span>
+                                                @:<span class="badge bg-info">Instructor</span>
                                                 break;
                                             case ReportStatus.Approved:
                                                 @:<span class="badge bg-success">Aprobado</span>
                                                 break;
                                             case ReportStatus.SubmittedToRI:
-                                                @:<span class="badge bg-warning">Enviado a RI</span>
+                                                @:<span class="badge bg-warning">RI</span>
                                                 break;
                                             case ReportStatus.Rejected:
                                                 @:<span class="badge bg-danger">Rechazado</span>
                                                 break;
                                         }
                                     </td>
+
                                     <td>@report.CreatedBy?.UserName</td>
+
                                     <td class="text-end">
-                                        <div class="btn-group gap-2" role="group">
-                                            <!-- Botón Detalles -->
-                                            <a asp-action="Details" asp-route-id="@report.Id" class="btn btn-sm btn-outline-info" title="Detalles">
+                                        <div class="btn-group gap-2">
+
+                                            <a asp-action="Details" asp-route-id="@report.Id"
+                                               class="btn btn-sm btn-outline-info">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <!-- Botón Eliminar: solo si Draft -->
                                             @if (report.Status == ReportStatus.Draft)
                                             {
-                                                <a asp-action="Delete" asp-route-id="@report.Id" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                <a asp-action="Delete" asp-route-id="@report.Id"
+                                                   class="btn btn-sm btn-outline-danger">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             }
 
-                                            <!-- Botón Enviar a RI: solo si Approved -->
                                             @if (report.Status == ReportStatus.Approved)
                                             {
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-primary"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#confirmRiModal"
-                                                        data-report-id="@report.Id"
-                                                        title="Enviar a RI">
+                                                        data-report-id="@report.Id">
                                                     <i class="fas fa-paper-plane"></i>
                                                 </button>
                                             }
+
                                         </div>
                                     </td>
                                 </tr>
@@ -94,52 +173,83 @@
                         else
                         {
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No hay reportes registrados.</td>
+                                <td colspan="6" class="text-center text-muted">
+                                    No hay reportes con esos filtros
+                                </td>
                             </tr>
                         }
                         </tbody>
                     </table>
                 </div>
+
             </div>
-            <div class="card-footer text-muted">
-                Total de reportes: @(Model?.Count() ?? 0)
+
+            <!-- 📄 FOOTER -->
+            <div class="card-footer d-flex justify-content-between align-items-center">
+
+                <span>
+                    Mostrando @Model.FromItem - @Model.ToItem de @Model.TotalItems
+                </span>
+
+                <nav>
+                    <ul class="pagination mb-0">
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-status="@Model.Status"
+                                   asp-route-startDate="@Model.StartDate?.ToString("yyyy-MM-dd")"
+                                   asp-route-endDate="@Model.EndDate?.ToString("yyyy-MM-dd")">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 Modal RI (igual que el tuyo) -->
+<div class="modal fade" id="confirmRiModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5>Confirmar envío a RI</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                ¿Seguro que deseas enviar este reporte?
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <form asp-action="UpdateStatus" method="post">
+                    <input type="hidden" name="id" id="reportIdInput" />
+                    <input type="hidden" name="targetStatus" value="SubmittedToRI" />
+
+                    <button type="submit" class="btn btn-primary">
+                        Enviar
+                    </button>
+                </form>
+
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de confirmación para Enviar a RI -->
-<div class="modal fade" id="confirmRiModal" tabindex="-1" aria-labelledby="confirmRiLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="confirmRiLabel">Confirmar envío a RI</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body text-center">
-        <p>¿Seguro que deseas enviar este reporte a RI?<br />
-        Una vez enviado, ya no podrás modificarlo.</p>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <form id="confirmRiForm" asp-action="UpdateStatus" asp-controller="Reports" method="post" class="d-inline">
-            <input type="hidden" name="id" id="reportIdInput" />
-            <input type="hidden" name="targetStatus" value="SubmittedToRI" />
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-paper-plane"></i> Sí, enviar
-            </button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-    var confirmRiModal = document.getElementById('confirmRiModal');
-    confirmRiModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var reportId = button.getAttribute('data-report-id');
-        var input = document.getElementById('reportIdInput');
-        input.value = reportId;
-    });
+document.getElementById('confirmRiModal')
+.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var reportId = button.getAttribute('data-report-id');
+    document.getElementById('reportIdInput').value = reportId;
+});
 </script>

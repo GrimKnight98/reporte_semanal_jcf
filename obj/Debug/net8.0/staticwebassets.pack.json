@@ -257,6 +257,10 @@
       "PackagePath": "staticwebassets/uploads/logos/logo-light.png"
     },
     {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png",
+      "PackagePath": "staticwebassets/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png"
+    },
+    {
       "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/26208f3e-88ed-4b26-b0f6-93e0a3be3069.png",
       "PackagePath": "staticwebassets/uploads/signatures/26208f3e-88ed-4b26-b0f6-93e0a3be3069.png"
     },

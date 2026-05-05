@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Qjy2V/q2/4/QxXH0En8o/NVsQqHAMjzBYa6Brs1qtU4=",
+  "Hash": "iCxZReB9XrWP6akQmqpco8ndoIpFR/kD1yEZIg+6syw=",
   "Source": "DemoMvc",
   "BasePath": "_content/DemoMvc",
   "Mode": "Default",
@@ -2390,6 +2390,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/uploads/logos/logo-light.png"
+    },
+    {
+      "Identity": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png",
+      "SourceId": "DemoMvc",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/",
+      "BasePath": "_content/DemoMvc",
+      "RelativePath": "uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png"
     },
     {
       "Identity": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/26208f3e-88ed-4b26-b0f6-93e0a3be3069.png",

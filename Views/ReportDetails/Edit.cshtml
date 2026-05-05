@@ -17,19 +17,25 @@
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="ReportId" />
 
+                    <!-- Observaciones primero -->
                     <div class="mb-3">
-                        <label asp-for="TrainingSessions" class="form-label fw-bold"></label>
-                        <textarea asp-for="TrainingSessions" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="TrainingSessions" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Observations" class="form-label fw-bold"></label>
+                        <label asp-for="Observations" class="form-label fw-bold">
+                            ¿Tuviste dudas? ¿Quién te ayudó a resolverlas?
+                        </label>
                         <textarea asp-for="Observations" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Observations" class="text-danger"></span>
                     </div>
 
-                    <!-- Select multiple con chips (Choices.js) -->
+                    <!-- Training Sessions después -->
+                    <div class="mb-3">
+                        <label asp-for="TrainingSessions" class="form-label fw-bold">
+                            En esta semana ¿recibiste capacitación, pláticas o algún taller? Cuéntanos de qué:
+                        </label>
+                        <textarea asp-for="TrainingSessions" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="TrainingSessions" class="text-danger"></span>
+                    </div>
+
+                    <!-- Select multiple con chips (Tom Select) -->
                     <div class="mb-3">
                         <label for="ActivitiesIds" class="form-label fw-bold">Actividades Semanales</label>
                         <select id="ActivitiesIds" name="ActivitiesIds" asp-items="ViewBag.ActivitiesList" multiple></select>
@@ -53,19 +59,18 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <!-- Choices.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <!-- Tom Select CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const element = document.getElementById('ActivitiesIds');
-            new Choices(element, {
-                removeItemButton: true,
-                placeholderValue: 'Selecciona actividades',
-                searchPlaceholderValue: 'Buscar...',
-                shouldSort: false
+            new TomSelect("#ActivitiesIds", {
+                plugins: ['remove_button'],
+                placeholder: "Selecciona actividades",
+                create: false
             });
         });
     </script>
 }
+

@@ -1,78 +1,258 @@
-@model IEnumerable<DemoMvc.Models.Report>
+@model DemoMvc.ViewModels.Instructor.SubmittedReportsPagedViewModel
+@using DemoMvc.Models
 
 @{
     ViewData["Title"] = "Reportes Enviados";
 }
 
-<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="col-md-11">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="fw-bold">Reportes Enviados por JCF Asignados</span>
-                <a asp-action="Index" class="btn btn-sm btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver
-                </a>
-            </div>
-            <div class="card-body">
-                @if (Model != null && Model.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="border-bottom">
-                                <tr class="fw-bold">
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Fecha inicio</th>
-                                    <th scope="col">Fecha fin</th>
-                                    <th scope="col">Estado</th>
-                                    <th scope="col">Creado por</th>
-                                    <th scope="col" class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var report in Model)
+<div class="container-fluid mt-4">
+
+    <div class="row">
+
+        <!-- PANEL FILTROS -->
+        <div class="col-md-3">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white fw-bold">
+                    Filtros
+                </div>
+
+                <div class="card-body">
+
+                    <form method="get" asp-action="SubmittedReports">
+
+                        <!-- JCF -->
+                        <div class="mb-3">
+                            <label class="form-label">JCF</label>
+
+                            <select name="selectedJcfUserId" class="form-select">
+                                <option value="">Todos</option>
+
+                                @foreach (var jcf in Model.JcfOptions)
                                 {
-                                    <tr>
-                                        <td>@report.Id</td>
-                                        <td>@report.StartDate.ToShortDateString()</td>
-                                        <td>@report.EndDate.ToShortDateString()</td>
-                                        <td>
-                                            @switch (report.Status)
-                                            {
-                                                case ReportStatus.SubmittedToInstructor:
-                                                    @:<span class="badge bg-info">Enviado a Instructor</span>
-                                                    break;
-                                                case ReportStatus.Approved:
-                                                    @:<span class="badge bg-success">Aprobado</span>
-                                                    break;
-                                                case ReportStatus.Rejected:
-                                                    @:<span class="badge bg-danger">Rechazado</span>
-                                                    break;
-                                                case ReportStatus.SubmittedToRI:
-                                                    @:<span class="badge bg-warning text-dark">Enviado a RI</span>
-                                                    break;
-                                            }
-                                        </td>
-                                        <td>@report.CreatedBy?.UserName</td>
-                                        <td class="text-end">
-                                            <a asp-controller="InstructorDashboard" asp-action="SubmittedReportDetails" asp-route-id="@report.Id" 
-                                            class="btn btn-sm btn-outline-primary me-1">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    <option value="@jcf.Id"
+                                            selected="@(Model.SelectedJcfUserId == jcf.Id)">
+                                        @jcf.UserName
+                                    </option>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">No hay reportes enviados disponibles para tus JCF asignados.</p>
-                }
+                            </select>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+
+                            <select name="status" class="form-select">
+                                <option value="">Todos</option>
+
+                                @foreach (var status in Enum.GetValues(typeof(ReportStatus)))
+                                {
+                                    <option value="@status"
+                                            selected="@(Model.Status?.ToString() == status.ToString())">
+
+                                        @(status.ToString() switch
+                                        {
+                                            "SubmittedToInstructor" => "Enviado a Instructor",
+                                            "Approved" => "Aprobado",
+                                            "Rejected" => "Rechazado",
+                                            "SubmittedToRI" => "Enviado a RI",
+                                            _ => status.ToString()
+                                        })
+
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Fecha inicio -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Inicio</label>
+
+                            <input type="date"
+                                   name="startDate"
+                                   class="form-control"
+                                   value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <!-- Fecha fin -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Fin</label>
+
+                            <input type="date"
+                                   name="endDate"
+                                   class="form-control"
+                                   value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <!-- PageSize -->
+                        <div class="mb-3">
+                            <label class="form-label">Registros por página</label>
+
+                            <select name="pageSize" class="form-select">
+                                <option value="5" selected="@(Model.PageSize == 5)">5</option>
+                                <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                                <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            Filtrar
+                        </button>
+
+                        <a asp-action="SubmittedReports"
+                           class="btn btn-outline-secondary w-100 mt-2">
+                            Limpiar
+                        </a>
+
+                    </form>
+
+                </div>
             </div>
-            <div class="card-footer text-muted">
-                Estos reportes corresponden a los JCF que tienes asignados y están listos para revisión.
-            </div>
+
         </div>
+
+        <!-- TABLA -->
+        <div class="col-md-9">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <span class="fw-bold">
+                        Reportes Enviados (@Model.TotalItems)
+                    </span>
+
+
+                </div>
+
+                <div class="card-body">
+
+                    @if (Model.Items.Any())
+                    {
+                        <div class="table-responsive">
+
+                            <table class="table table-hover align-middle">
+
+                                <thead class="border-bottom">
+                                    <tr class="fw-bold">
+                                        <th>ID</th>
+                                        <th>Inicio</th>
+                                        <th>Fin</th>
+                                        <th>Estado</th>
+                                        <th>JCF</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var report in Model.Items)
+                                    {
+                                        <tr>
+
+                                            <td>@report.Id</td>
+
+                                            <td>@report.StartDate.ToShortDateString()</td>
+
+                                            <td>@report.EndDate.ToShortDateString()</td>
+
+                                            <td>
+
+                                                @switch (report.Status)
+                                                {
+                                                    case ReportStatus.SubmittedToInstructor:
+                                                        @:<span class="badge bg-info">Enviado</span>
+                                                        break;
+
+                                                    case ReportStatus.Approved:
+                                                        @:<span class="badge bg-success">Aprobado</span>
+                                                        break;
+
+                                                    case ReportStatus.Rejected:
+                                                        @:<span class="badge bg-danger">Rechazado</span>
+                                                        break;
+
+                                                    case ReportStatus.SubmittedToRI:
+                                                        @:<span class="badge bg-warning text-dark">RI</span>
+                                                        break;
+                                                }
+
+                                            </td>
+
+                                            <td>@report.CreatedBy?.UserName</td>
+
+                                            <td class="text-end">
+
+                                                <a asp-controller="InstructorDashboard"
+                                                   asp-action="SubmittedReportDetails"
+                                                   asp-route-id="@report.Id"
+                                                   class="btn btn-sm btn-outline-primary">
+
+                                                    <i class="fas fa-eye"></i> Ver
+
+                                                </a>
+
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            No hay reportes con esos filtros.
+                        </div>
+                    }
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="card-footer d-flex justify-content-between align-items-center">
+
+                    <span>
+                        Mostrando @Model.FromItem - @Model.ToItem de @Model.TotalItems
+                    </span>
+
+                    <nav>
+
+                        <ul class="pagination mb-0">
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+
+                                    <a class="page-link"
+                                       asp-action="SubmittedReports"
+                                       asp-route-page="@i"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-status="@Model.Status"
+                                       asp-route-selectedJcfUserId="@Model.SelectedJcfUserId"
+                                       asp-route-startDate="@Model.StartDate?.ToString("yyyy-MM-dd")"
+                                       asp-route-endDate="@Model.EndDate?.ToString("yyyy-MM-dd")">
+
+                                        @i
+
+                                    </a>
+
+                                </li>
+                            }
+
+                        </ul>
+
+                    </nav>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 </div>

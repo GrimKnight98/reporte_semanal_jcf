@@ -9,6 +9,7 @@ using DemoMvc.Data;
 using DemoMvc.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace DemoMvc.Controllers
 {
@@ -25,11 +26,18 @@ namespace DemoMvc.Controllers
         }
 
         // GET: ReportDetails/Create
-        public IActionResult Create(int reportId)
-        {
-            ViewData["ActivitiesList"] = new MultiSelectList(_context.WeeklyActivities, "Id", "Name");
-            return View(new ReportDetail { ReportId = reportId });
-        }
+public IActionResult Create(int reportId)
+{
+    var userId = _userManager.GetUserId(User);
+
+    var activities = _context.WeeklyActivities
+        .Where(a => a.CreatedByUserId == userId)
+        .ToList();
+
+    ViewData["ActivitiesList"] = new MultiSelectList(activities, "Id", "Name");
+
+    return View(new ReportDetail { ReportId = reportId });
+}
 
         // POST: ReportDetails/Create
         [HttpPost]

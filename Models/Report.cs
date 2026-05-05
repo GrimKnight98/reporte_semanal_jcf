@@ -45,6 +45,8 @@ namespace DemoMvc.Models
     public string? RejectedById { get; set; }
     public ApplicationUser? RejectedBy { get; set; }
     public DateTime? RejectedAt { get; set; }
+    [MaxLength(1000)]
+    public string? RejectionComment { get; set; }
 
         // Relación con detalles (editable mientras esté en Draft/Rejected)
         public ICollection<ReportDetail> Details { get; set; } = new List<ReportDetail>();

@@ -1,164 +1,457 @@
+
 @model DemoMvc.Models.Report
 
 @{
     ViewData["Title"] = "Detalle de Reporte Enviado";
+
+    var activityMap = Model.Details?
+        .SelectMany(detail => detail.ReportActivities.Select(activity => new
+        {
+            Activity = activity,
+            Detail = detail
+        }))
+        .ToList();
 }
 
 <div class="container my-4">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="fw-bold">Reporte #@Model.Id</span>
-            <a asp-controller="InstructorDashboard" asp-action="SubmittedReports" class="btn btn-sm btn-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
+
+    <!-- Header -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+            <div>
+                <h3 class="fw-bold mb-1">
+                    Reporte #@Model.Id
+                </h3>
+
+<div class="d-flex flex-wrap gap-3 mt-2">
+
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-calendar-alt text-primary"></i>
+
+        <div>
+            <div class="small text-muted">Periodo</div>
+            <div class="fw-semibold">
+                @Model.StartDate.ToShortDateString()
+                —
+                @Model.EndDate.ToShortDateString()
+            </div>
         </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-user text-success"></i>
+
+        <div>
+            <div class="small text-muted">Remitente</div>
+            <div class="fw-semibold">
+                @Model.CreatedBy?.UserName
+            </div>
+        </div>
+    </div>
+
+</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                @switch (Model.Status)
+                {
+                    case ReportStatus.SubmittedToInstructor:
+                        <span class="badge bg-info fs-6 px-3 py-2">Enviado a Instructor</span>
+                        break;
+
+                    case ReportStatus.Approved:
+                        <span class="badge bg-success fs-6 px-3 py-2">Aprobado</span>
+                        break;
+
+                    case ReportStatus.Rejected:
+                        <span class="badge bg-danger fs-6 px-3 py-2">Rechazado</span>
+                        break;
+
+                    case ReportStatus.SubmittedToRI:
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">Enviado a RI</span>
+                        break;
+                }
+
+                <a asp-controller="InstructorDashboard"
+                   asp-action="SubmittedReports"
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+@if (Model.Status == ReportStatus.Rejected &&
+    !string.IsNullOrEmpty(Model.RejectionComment))
+{
+    <div class="card border-0 shadow-sm mb-4 rejection-card">
         <div class="card-body">
 
-            <!-- Sección: Fechas y Estado -->
-            <section class="mb-4">
-                <h5 class="fw-bold">Información del Reporte</h5>
-                <p><strong>Fecha inicio:</strong> @Model.StartDate.ToShortDateString()</p>
-                <p><strong>Fecha fin:</strong> @Model.EndDate.ToShortDateString()</p>
-                <p><strong>Estado:</strong>
-                    @switch (Model.Status)
-                    {
-                        case ReportStatus.SubmittedToInstructor:
-                            @:<span class="badge bg-info fs-6">Enviado a Instructor</span>
-                            break;
-                        case ReportStatus.Approved:
-                            @:<span class="badge bg-success fs-6">Aprobado</span>
-                            break;
-                        case ReportStatus.Rejected:
-                            @:<span class="badge bg-danger fs-6">Rechazado</span>
-                            break;
-                        case ReportStatus.SubmittedToRI:
-                            @:<span class="badge bg-warning text-dark fs-6">Enviado a RI</span>
-                            break;
-                    }
-                </p>
-            </section>
+            <div class="d-flex align-items-start gap-3">
 
-            <!-- Sección: Actividades -->
-            <section class="mb-4">
-                <h5 class="fw-bold">Actividades</h5>
-                <div class="row">
-                    @foreach (var activity in Model.Details.SelectMany(d => d.ReportActivities))
-                    {
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100 border-primary">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title">@activity.WeeklyActivity?.Name</h6>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                <div class="fs-3 text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-            </section>
 
-            <!-- Sección: Actividades Aprendidas -->
-            <section class="mb-4">
-                <h5 class="fw-bold">Actividades Aprendidas</h5>
-                @foreach (var detail in Model.Details)
-                {
-                    if (!string.IsNullOrEmpty(detail.LearnedActivities))
-                    {
-                        var learnedList = detail.LearnedActivities.Split(';');
-                        <ul class="list-group list-group-flush">
-                            @foreach (var act in learnedList)
-                            {
-                                if (!string.IsNullOrWhiteSpace(act))
-                                {
-                                    <li class="list-group-item">• @act.Trim()</li>
-                                }
-                            }
-                        </ul>
-                    }
-                }
-            </section>
+                <div class="flex-grow-1">
 
-            <!-- Sección: Sesiones de Entrenamiento -->
-            <section class="mb-4">
-                <h5 class="fw-bold">Sesiones de Entrenamiento</h5>
-                @if (Model.Details != null && Model.Details.Any())
-                {
-                    <ul class="list-group list-group-flush">
-                        @foreach (var detail in Model.Details)
-                        {
-                            <li class="list-group-item">
-                                <strong>@detail.TrainingSessions</strong>
-                                @if (!string.IsNullOrEmpty(detail.Observations))
-                                {
-                                    <div class="text-muted">Obs: @detail.Observations</div>
-                                }
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted">No hay sesiones registradas.</p>
-                }
-            </section>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <h6 class="fw-bold text-danger mb-0">
+                            Motivo del rechazo
+                        </h6>
 
-            <!-- Sección: Acciones -->
-            <section class="mt-4 d-flex justify-content-end">
-                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#authorizeModal">
-                    <i class="fas fa-check"></i> Autorizar
-                </button>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                    <i class="fas fa-times"></i> Rechazar
-                </button>
-            </section>
+                        <span class="badge bg-danger-subtle text-danger border">
+                            Requiere corrección
+                        </span>
+                    </div>
+
+                    <div class="text-body-secondary">
+                        @Model.RejectionComment
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
     </div>
-</div>
+}
 
-<!-- Modal Autorizar -->
-<div class="modal fade" id="authorizeModal" tabindex="-1" aria-labelledby="authorizeModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="authorizeModalLabel">Confirmar autorización</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        ¿Seguro que deseas autorizar este reporte?
-      </div>
-      <div class="modal-footer">
-        <form asp-controller="Reports" asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-targetStatus="Approved" method="post" class="d-inline">
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-check"></i> Sí, autorizar
-            </button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
+    <div class="row g-4">
+
+        <!-- Panel izquierdo -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="fw-bold mb-0">Actividades</h5>
+                </div>
+
+                <div class="list-group list-group-flush rounded-0 activity-scroll">
+
+                    @if (activityMap != null && activityMap.Any())
+                    {
+                        var index = 0;
+
+                        @foreach (var item in activityMap)
+                        {
+                            <button type="button"
+                                    class="list-group-item list-group-item-action activity-item @(index == 0 ? "active" : "")"
+                                    data-target="activity-panel-@item.Activity.WeeklyActivityId">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">
+                                            @item.Activity.WeeklyActivity?.Name
+                                        </div>
+
+                                        <small class="activity-subtitle">
+                                            Actividad semanal
+                                        </small>
+                                    </div>
+
+                                    <i class="fas fa-chevron-right small"></i>
+                                </div>
+                            </button>
+
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-4 text-muted text-center">
+                            No hay actividades registradas.
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel derecho -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    @if (activityMap != null && activityMap.Any())
+                    {
+                        var detailIndex = 0;
+
+                        @foreach (var item in activityMap)
+                        {
+                            var detail = item.Detail;
+
+                            <div id="activity-panel-@item.Activity.WeeklyActivityId"
+                                 class="activity-panel @(detailIndex == 0 ? "" : "d-none")">
+
+                                <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+
+                                    <div>
+                                        <h4 class="fw-bold mb-1">
+                                            @item.Activity.WeeklyActivity?.Name
+                                        </h4>
+
+                                        <div class="text-muted small">
+                                            Información relacionada al detalle semanal
+                                        </div>
+                                    </div>
+
+                                    <span class="badge rounded-pill text-bg-secondary px-3 py-2">
+                                        Detail #@detail.Id
+                                    </span>
+                                </div>
+
+                                <div class="row g-4">
+
+                                    <!-- Aprendido -->
+                                    <div class="col-md-6">
+                                        <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
+                                            <h6 class="fw-bold mb-3">
+                                                Actividad Aprendida
+                                            </h6>
+
+                                            @if (!string.IsNullOrEmpty(item.Activity.WeeklyActivity?.Description))
+                                            {
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <i class="fas fa-check-circle text-success mt-1"></i>
+
+                                                    <div>
+                                                        @item.Activity.WeeklyActivity?.Description
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted mb-0">
+                                                    Sin descripción registrada.
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Sesiones -->
+                                    <div class="col-md-6">
+                                        <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
+                                            <h6 class="fw-bold mb-3">
+                                                En esta semana ¿recibiste capacitación, platicas o algún taller? Cuéntanos de que:
+                                            </h6>
+
+                                            @if (!string.IsNullOrEmpty(detail.TrainingSessions))
+                                            {
+                                                <div>
+                                                    @detail.TrainingSessions
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted mb-0">
+                                                    No registradas.
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(detail.Observations))
+                                {
+                                    <div class="mt-4 border rounded-3 p-3 bg-body-tertiary">
+                                        <h6 class="fw-bold mb-3">
+                                            ¿Tuviste dudas? ¿Quién te ayudo a resolverlas?
+                                        </h6>
+
+                                        <div class="text-muted">
+                                            @detail.Observations
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+
+                            detailIndex++;
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
+
+    <!-- Acciones -->
+@if (Model.Status == ReportStatus.SubmittedToInstructor)
+{
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body d-flex justify-content-end gap-2 flex-wrap">
+
+            <button type="button"
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#authorizeModal">
+                <i class="fas fa-check me-1"></i> Autorizar
+            </button>
+
+            <button type="button"
+                    class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rejectModal">
+                <i class="fas fa-times me-1"></i> Rechazar
+            </button>
+
+        </div>
+    </div>
+}
+
 </div>
 
+@* Dialogos de autorización y rechazo (simulados) *@
 
+@if (Model.Status == ReportStatus.SubmittedToInstructor)
+{
+    <!-- Modal Autorizar -->
+    <div class="modal fade" id="authorizeModal" tabindex="-1" aria-labelledby="authorizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="authorizeModalLabel">
+                        Confirmar autorización
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Seguro que deseas autorizar este reporte?
+                </div>
+
+                <div class="modal-footer">
+
+                    <form asp-controller="Reports"
+                          asp-action="UpdateStatus"
+                          asp-route-id="@Model.Id"
+                          asp-route-targetStatus="Approved"
+                          method="post">
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-1"></i>
+                            Sí, autorizar
+                        </button>
+                    </form>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 <!-- Modal Rechazar -->
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="rejectModalLabel">Confirmar rechazo</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        ¿Seguro que deseas rechazar este reporte?
-      </div>
-      <div class="modal-footer">
-        <form asp-controller="Reports" asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-targetStatus="Rejected" method="post" class="d-inline">
-            <button type="submit" class="btn btn-danger">
-                <i class="fas fa-times"></i> Sí, rechazar
-            </button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-    </div>
-  </div>
-</div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
 
+            <form asp-controller="Reports"
+                  asp-action="UpdateStatus"
+                  asp-route-id="@Model.Id"
+                  asp-route-targetStatus="Rejected"
+                  method="post">
+
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="rejectModalLabel">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Confirmar rechazo
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <p class="mb-4 text-muted">
+                        Explica brevemente por qué este reporte será rechazado.
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="rejectionComment" class="form-label fw-semibold">
+                            Motivo del rechazo
+                        </label>
+
+                        <textarea name="rejectionComment"
+                                  id="rejectionComment"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Ejemplo: faltan evidencias, actividades incompletas, sesiones poco claras..."
+                                  required></textarea>
+
+                        <div class="form-text">
+                            Este comentario será visible para el usuario que envió el reporte.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-top-0">
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times me-1"></i>
+                        Rechazar reporte
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const items = document.querySelectorAll('.activity-item');
+            const panels = document.querySelectorAll('.activity-panel');
+
+            items.forEach(item => {
+                item.addEventListener('click', function () {
+
+                    items.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const target = this.getAttribute('data-target');
+
+                    panels.forEach(panel => {
+                        panel.classList.add('d-none');
+                    });
+
+                    const selectedPanel = document.getElementById(target);
+
+                    if (selectedPanel) {
+                        selectedPanel.classList.remove('d-none');
+                    }
+                });
+            });
+        });
+    </script>
+}
 

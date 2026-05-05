@@ -279,3 +279,4 @@
 /workspaces/vscode-remote-try-dotnet/DemoMvc/obj/Debug/net8.0/DemoMvc.pdb
 /workspaces/vscode-remote-try-dotnet/DemoMvc/obj/Debug/net8.0/DemoMvc.genruntimeconfig.cache
 /workspaces/vscode-remote-try-dotnet/DemoMvc/obj/Debug/net8.0/ref/DemoMvc.dll
+/workspaces/vscode-remote-try-dotnet/DemoMvc/obj/Debug/net8.0/DemoMvc.sourcelink.json

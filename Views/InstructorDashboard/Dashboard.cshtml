@@ -1,43 +1,168 @@
+@model DemoMvc.ViewModels.InstructorDashboardViewModel
+@using DemoMvc.Models
+
 @{
     ViewData["Title"] = "Dashboard Instructor";
-    var userName = User.Identity.Name ?? "Usuario";
-    var userRole = "Instructor"; 
 }
 
+<style>
+    .hover-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+    }
+
+    .card-header i {
+        margin-right: 6px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+</style>
+
 <div class="container mt-4">
-    <!-- Mensaje de bienvenida -->
-    <div class="alert alert-primary" role="alert">
-        <h4 class="alert-heading">Hola, @userName</h4>
-        <p>Rol: @userRole</p>
+
+    <!-- Bienvenida -->
+    <div class="alert border shadow-sm d-flex justify-content-between align-items-center"
+         style="background-color: var(--bs-tertiary-bg);">
+        <div>
+            <h4 class="mb-0">Hola, @Model.UserName</h4>
+            <small class="text-body-secondary">Panel de control de reportes</small>
+        </div>
+        <i class="bi bi-speedometer2 fs-3"></i>
     </div>
 
-    <!-- Cards -->
-    <div class="row">
-        <!-- Card JCF -->
+    <!-- 🔴 CARD PRINCIPAL -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-controller="InstructorDashboard"
+               asp-action="SubmittedReports"
+               asp-route-status="@ReportStatus.SubmittedToInstructor"
+               class="text-decoration-none">
+
+                <div class="card shadow border-0 hover-card">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Reportes por revisar
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="mb-2 text-body-secondary">Pendientes de revisión</p>
+                        <h1 class="display-4 fw-bold">@Model.ReportsPending</h1>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+    </div>
+
+    <!-- 🟢 + 🟡 -->
+    <div class="row g-4 mb-4">
+
+        <!-- Aprobados -->
         <div class="col-md-6">
-            <div class="card text-center">
-                <!-- Guinda personalizado -->
-                <div class="card-header text-white" style="background-color:#800020;">
-                    Jóvenes Construyendo el Futuro
+            <a asp-controller="InstructorDashboard"
+               asp-action="SubmittedReports"
+               asp-route-status="@ReportStatus.Approved"
+               class="text-decoration-none">
+
+                <div class="card text-center shadow-sm h-100 hover-card">
+                    <div class="card-header bg-success text-white fw-bold">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Listos para RI
+                    </div>
+                    <div class="card-body">
+                        <p class="text-body-secondary mb-1">Aprobados</p>
+                        <h2 class="fw-bold">@Model.ReportsApproved</h2>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">Número de JCF asignados</h5>
-                    <p class="display-4">12</p> <!-- dato dummy -->
+
+            </a>
+        </div>
+
+        <!-- Rechazados -->
+        <div class="col-md-6">
+            <a asp-controller="InstructorDashboard"
+               asp-action="SubmittedReports"
+               asp-route-status="@ReportStatus.Rejected"
+               class="text-decoration-none">
+
+                <div class="card text-center shadow-sm h-100 hover-card">
+                    <div class="card-header bg-warning text-dark fw-bold">
+                        <i class="bi bi-x-circle-fill"></i>
+                        Requieren corrección
+                    </div>
+                    <div class="card-body">
+                        <p class="text-body-secondary mb-1">Devueltos</p>
+                        <h2 class="fw-bold">@Model.ReportsRejected</h2>
+                    </div>
                 </div>
+
+            </a>
+        </div>
+
+    </div>
+
+    <!-- 📋 TABLA -->
+    <div class="card shadow-sm hover-card">
+        <div class="card-header fw-bold border-bottom d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-list-task"></i>
+                Pendientes de la semana
+                <span class="text-body-secondary small ms-2">
+                    (@Model.StartOfWeek.ToString("dd/MM") - @Model.EndOfWeek.ToString("dd/MM"))
+                </span>
             </div>
         </div>
 
-        <!-- Card Reportes -->
-        <div class="col-md-6">
-            <div class="card text-center">
-                <div class="card-header bg-warning text-dark">
-                    Reportes enviados
+        <div class="card-body p-0">
+
+            @if (!Model.RecentPendingReports.Any())
+            {
+                <div class="p-4 text-center text-body-secondary">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    No hay reportes pendientes esta semana
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">Reportes en aprobación</h5>
-                    <p class="display-4">3</p> <!-- dato dummy -->
-                </div>
-            </div>
+            }
+            else
+            {
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-person"></i> JCF</th>
+                            <th><i class="bi bi-calendar-range"></i> Periodo</th>
+                            <th><i class="bi bi-clock"></i> Enviado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.RecentPendingReports)
+                        {
+                            <tr>
+                                <td>@r.CreatedBy?.UserName</td>
+                                <td>
+                                    @r.StartDate.ToString("dd/MM") -
+                                    @r.EndDate.ToString("dd/MM")
+                                </td>
+                                <td>@r.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end">
+                                    <a asp-controller="InstructorDashboard"
+                                       asp-action="SubmittedReportDetails"
+                                       asp-route-id="@r.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Revisar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
         </div>
     </div>
+
 </div>

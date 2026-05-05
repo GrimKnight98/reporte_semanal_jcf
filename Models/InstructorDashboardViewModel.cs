@@ -1,3 +1,4 @@
+using DemoMvc.Models;
 namespace DemoMvc.ViewModels
 {
     public class InstructorDashboardViewModel
@@ -13,5 +14,9 @@ namespace DemoMvc.ViewModels
         public int ReportsPending { get; set; }    // Reportes en aprobación
         public int ReportsApproved { get; set; }   // Reportes aprobados
         public int ReportsRejected { get; set; }   // Reportes rechazados
+        public List<Report> RecentPendingReports { get; set; } = new();
+
+public DateTime StartOfWeek { get; set; }
+public DateTime EndOfWeek { get; set; }
     }
 }

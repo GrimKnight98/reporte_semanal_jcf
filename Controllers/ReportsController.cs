@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using DemoMvc.ViewModels.Reports;
 
 namespace DemoMvc.Controllers
 {
@@ -27,21 +28,79 @@ namespace DemoMvc.Controllers
         }
 
         // GET: Reports
-        public async Task<IActionResult> Index()
-        {
-            // 🔑 Obtener el usuario autenticado
-            var userId = _userManager.GetUserId(User);
+public async Task<IActionResult> Index(
+    int page = 1,
+    int pageSize = 5,
+    ReportStatus? status = null,
+    DateTime? startDate = null,
+    DateTime? endDate = null)
+{
+    var userId = _userManager.GetUserId(User);
 
-            // 🔑 Filtrar solo los reportes creados por ese usuario
-            var reports = await _context.Reports
-                .Include(r => r.Details)
-                .Include(r => r.CreatedBy)
-                .Where(r => r.CreatedById == userId) // 👈 filtro agregado
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync();
+    // 🔹 Normalización
+    page = page <= 0 ? 1 : page;
+    pageSize = pageSize <= 0 ? 5 : pageSize > 50 ? 50 : pageSize;
 
-            return View(reports);
-        }
+    // 🔴 Validación de fechas
+    if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+    {
+        ModelState.AddModelError("", "La fecha inicio no puede ser mayor a la fecha fin");
+    }
+
+    // 🔥 Default inteligente
+    if (!status.HasValue && !startDate.HasValue && !endDate.HasValue)
+    {
+        startDate = DateTime.UtcNow.AddDays(-30);
+    }
+
+    // 🧠 Query optimizada
+    var query = _context.Reports
+        .AsNoTracking() // 🔥 mejora clave
+        .Where(r => r.CreatedById == userId);
+
+    // 🔍 Filtros dinámicos
+    if (status.HasValue)
+        query = query.Where(r => r.Status == status.Value);
+
+    if (startDate.HasValue)
+        query = query.Where(r => r.EndDate >= startDate.Value);
+
+    if (endDate.HasValue)
+        query = query.Where(r => r.StartDate <= endDate.Value);
+
+    // 🔢 Total (antes de paginar)
+    var totalItems = await query.CountAsync();
+
+    // 📄 Datos paginados
+    var items = await query
+        .OrderByDescending(r => r.CreatedAt) // 🔥 ordenar antes de Skip/Take
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .Include(r => r.CreatedBy) // 👉 SOLO lo necesario
+        .ToListAsync();
+
+    // 🔧 Ajustar página
+    var totalPages = totalItems == 0
+        ? 1
+        : (int)Math.Ceiling((double)totalItems / pageSize);
+
+    if (page > totalPages)
+        page = totalPages;
+
+    // 📦 ViewModel
+    var model = new ReportPagedViewModel
+    {
+        Items = items,
+        CurrentPage = page,
+        PageSize = pageSize,
+        TotalItems = totalItems,
+        Status = status,
+        StartDate = startDate,
+        EndDate = endDate
+    };
+
+    return View(model);
+}
 
         // GET: Reports/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -63,7 +122,10 @@ namespace DemoMvc.Controllers
         // POST: Reports/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, ReportStatus targetStatus)
+        public async Task<IActionResult> UpdateStatus(
+        int id,
+        ReportStatus targetStatus,
+        string? rejectionComment)
         {
             var report = await _context.Reports.FindAsync(id);
             if (report == null) return NotFound();
@@ -100,6 +162,9 @@ namespace DemoMvc.Controllers
                         report.Status = ReportStatus.Rejected;
                         report.RejectedById = user.Id;
                         report.RejectedAt = DateTime.UtcNow;
+
+                        report.RejectionComment = rejectionComment;
+
                         report.UpdatedById = user.Id;
                         report.UpdatedAt = DateTime.UtcNow;
                     }

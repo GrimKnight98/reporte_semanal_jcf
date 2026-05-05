@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
 using DemoMvc.Data;
 using DemoMvc.Models;
+using DemoMvc.ViewModels;
+using DemoMvc.ViewModels.Instructor;
 
 namespace DemoMvc.Controllers
 {
@@ -15,125 +15,289 @@ namespace DemoMvc.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorDashboardController(AppDbContext context, UserManager<ApplicationUser> userManager)
+        public InstructorDashboardController(
+            AppDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
         [HttpGet]
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
-
-[HttpGet]
-public async Task<IActionResult> MyJCFs(string search, int page = 1, int pageSize = 10)
+public async Task<IActionResult> Dashboard()
 {
     var instructorId = _userManager.GetUserId(User);
 
-    IQueryable<InstructorJcfAssignment> query = _context.InstructorJcfAssignments
-        .Where(a => a.InstructorUserId == instructorId) // 👈 quitamos el filtro de Status
-        .Include(a => a.Jcf)
-        .OrderBy(a => a.Status); // 👈 primero "Activo", luego "Inactivo"
-
-    if (!string.IsNullOrWhiteSpace(search))
+    var model = new InstructorDashboardViewModel
     {
-        query = query.Where(a => a.Jcf.UserName.Contains(search));
+        UserName = User.Identity?.Name ?? "Instructor"
+    };
+
+    // -------------------------
+    // JCF Activos
+    // -------------------------
+
+    var jcfIds = await _context.InstructorJcfAssignments
+        .Where(a =>
+            a.InstructorUserId == instructorId &&
+            a.Status == "Activo")
+        .Select(a => a.JcfUserId)
+        .ToListAsync();
+
+    // -------------------------
+    // Métricas
+    // -------------------------
+
+    model.ReportsPending = await _context.Reports
+        .CountAsync(r =>
+            jcfIds.Contains(r.CreatedById) &&
+            r.Status == ReportStatus.SubmittedToInstructor);
+
+    model.ReportsApproved = await _context.Reports
+        .CountAsync(r =>
+            jcfIds.Contains(r.CreatedById) &&
+            r.Status == ReportStatus.Approved);
+
+    model.ReportsRejected = await _context.Reports
+        .CountAsync(r =>
+            jcfIds.Contains(r.CreatedById) &&
+            r.Status == ReportStatus.Rejected);
+
+    // -------------------------
+    // 🔥 Semana actual (lunes a domingo)
+    // -------------------------
+
+    var today = DateTime.UtcNow;
+
+    int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+    var startOfWeek = today.AddDays(-diff).Date;
+    var endOfWeek = startOfWeek.AddDays(6);
+
+    model.StartOfWeek = startOfWeek;
+    model.EndOfWeek = endOfWeek;
+
+    // -------------------------
+    // 🔴 Pendientes de la semana
+    // -------------------------
+
+    model.RecentPendingReports = await _context.Reports
+        .Include(r => r.CreatedBy)
+        .Where(r =>
+            jcfIds.Contains(r.CreatedById) &&
+            r.Status == ReportStatus.SubmittedToInstructor &&
+            r.StartDate >= startOfWeek &&
+            r.EndDate <= endOfWeek)
+        .OrderByDescending(r => r.CreatedAt)
+        .Take(5)
+        .ToListAsync();
+
+    return View(model);
+}
+        [HttpGet]
+        public async Task<IActionResult> MyJCFs(string search, int page = 1, int pageSize = 10)
+        {
+            var instructorId = _userManager.GetUserId(User);
+
+            IQueryable<InstructorJcfAssignment> query = _context.InstructorJcfAssignments
+                .Where(a => a.InstructorUserId == instructorId)
+                .Include(a => a.Jcf)
+                .OrderBy(a => a.Status);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(a => a.Jcf.UserName.Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var asignaciones = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var vm = new MyJCFsViewModel
+            {
+                Asignaciones = asignaciones,
+                TotalCount = totalCount,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                Search = search
+            };
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var asignacion = await _context.InstructorJcfAssignments
+                .Include(a => a.Instructor)
+                .Include(a => a.Jcf)
+                .Include(a => a.CreatedByUser)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (asignacion == null)
+            {
+                return NotFound();
+            }
+
+            return View(asignacion);
+        }
+
+[HttpGet]
+public async Task<IActionResult> SubmittedReports(
+    string? selectedJcfUserId,
+    ReportStatus? status,
+    DateTime? startDate,
+    DateTime? endDate,
+    int page = 1,
+    int pageSize = 10)
+{
+    var instructorUserId = _userManager.GetUserId(User);
+
+    // -----------------------------
+    // Obtener JCF asignados al instructor
+    // -----------------------------
+
+    var jcfAssignments = await _context.InstructorJcfAssignments
+        .Where(a =>
+            a.InstructorUserId == instructorUserId &&
+            a.Status == "Activo")
+        .Include(a => a.Jcf)
+        .ToListAsync();
+
+    var jcfUserIds = jcfAssignments
+        .Select(a => a.JcfUserId)
+        .ToList();
+
+    // -----------------------------
+    // Query base
+    // -----------------------------
+
+    var query = _context.Reports
+        .Include(r => r.CreatedBy)
+        .Where(r =>
+            jcfUserIds.Contains(r.CreatedById) &&
+            (r.Status == ReportStatus.SubmittedToInstructor ||
+             r.Status == ReportStatus.Approved ||
+             r.Status == ReportStatus.Rejected ||
+             r.Status == ReportStatus.SubmittedToRI))
+        .AsQueryable();
+
+    // -----------------------------
+    // Filtro por JCF
+    // -----------------------------
+
+    if (!string.IsNullOrWhiteSpace(selectedJcfUserId))
+    {
+        query = query.Where(r => r.CreatedById == selectedJcfUserId);
     }
 
-    var totalCount = await query.CountAsync();
-    var asignaciones = await query
+    // -----------------------------
+    // Filtro por status
+    // -----------------------------
+
+    if (status.HasValue)
+    {
+        query = query.Where(r => r.Status == status.Value);
+    }
+
+    // -----------------------------
+    // Fecha inicio
+    // -----------------------------
+
+    if (startDate.HasValue)
+    {
+        query = query.Where(r => r.StartDate >= startDate.Value);
+    }
+
+    // -----------------------------
+    // Fecha fin
+    // -----------------------------
+
+    if (endDate.HasValue)
+    {
+        query = query.Where(r => r.EndDate <= endDate.Value);
+    }
+
+    // -----------------------------
+    // Total registros
+    // -----------------------------
+
+    var totalItems = await query.CountAsync();
+
+    // -----------------------------
+    // Paginación
+    // -----------------------------
+
+    var items = await query
+        .OrderByDescending(r => r.CreatedAt)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
 
-    var vm = new MyJCFsViewModel
+    // -----------------------------
+    // Construir ViewModel
+    // -----------------------------
+
+    var vm = new SubmittedReportsPagedViewModel
     {
-        Asignaciones = asignaciones,
-        TotalCount = totalCount,
+        Items = items,
+
+        SelectedJcfUserId = selectedJcfUserId,
+        Status = status,
+        StartDate = startDate,
+        EndDate = endDate,
+
         CurrentPage = page,
-        TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-        Search = search
+        PageSize = pageSize,
+
+        TotalItems = totalItems,
+        TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+
+        FromItem = totalItems == 0 ? 0 : ((page - 1) * pageSize) + 1,
+        ToItem = Math.Min(page * pageSize, totalItems),
+
+        JcfOptions = jcfAssignments
+            .Where(a => a.Jcf != null)
+            .Select(a => a.Jcf!)
+            .Distinct()
+            .ToList()
     };
 
     return View(vm);
 }
-[HttpGet]
-public async Task<IActionResult> Details(int id)
-{
-    var asignacion = await _context.InstructorJcfAssignments
-        .Include(a => a.Instructor)
-        .Include(a => a.Jcf)
-        .Include(a => a.CreatedByUser)
-        .FirstOrDefaultAsync(a => a.Id == id);
 
-    if (asignacion == null)
-    {
-        return NotFound();
-    }
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> SubmittedReportDetails(int id)
+        {
+            var instructorUserId = _userManager.GetUserId(User);
 
-    return View(asignacion);
-}
+            var jcfAssignments = await _context.InstructorJcfAssignments
+                .Where(a =>
+                    a.InstructorUserId == instructorUserId &&
+                    a.Status == "Activo")
+                .Select(a => a.JcfUserId)
+                .ToListAsync();
 
-public async Task<IActionResult> SubmittedReports()
-{
-    // Usuario actual (Instructor en sesión)
-    var instructorUserId = _userManager.GetUserId(User);
+            var report = await _context.Reports
+    .Include(r => r.Details)
+        .ThenInclude(d => d.ReportActivities)
+            .ThenInclude(ra => ra.WeeklyActivity)
+    .Include(r => r.CreatedBy)
+    .FirstOrDefaultAsync(r => r.Id == id);
 
-    // Buscar las asignaciones activas de este instructor
-    var jcfAssignments = await _context.InstructorJcfAssignments
-        .Where(a => a.InstructorUserId == instructorUserId && a.Status == "Activo")
-        .ToListAsync();
+            if (report == null)
+            {
+                return NotFound();
+            }
 
-    // Obtener los IDs de los JCF asignados
-    var jcfUserIds = jcfAssignments.Select(a => a.JcfUserId).ToList();
+            if (!jcfAssignments.Contains(report.CreatedById))
+            {
+                return Forbid();
+            }
 
-    // Filtrar reportes creados por esos JCF y en estados relevantes
-    var reports = await _context.Reports
-        .Include(r => r.CreatedBy)
-        .Where(r => jcfUserIds.Contains(r.CreatedById) &&
-                    (r.Status == ReportStatus.SubmittedToInstructor ||
-                     r.Status == ReportStatus.Approved ||
-                     r.Status == ReportStatus.Rejected ||
-                     r.Status == ReportStatus.SubmittedToRI))
-        .OrderByDescending(r => r.CreatedAt)
-        .ToListAsync();
-
-    return View(reports);
-}
-[Authorize(Roles = "Instructor")]
-public async Task<IActionResult> SubmittedReportDetails(int id)
-{
-    var instructorUserId = _userManager.GetUserId(User);
-
-    // Validar que el reporte pertenece a un JCF asignado al instructor
-    var jcfAssignments = await _context.InstructorJcfAssignments
-        .Where(a => a.InstructorUserId == instructorUserId && a.Status == "Activo")
-        .Select(a => a.JcfUserId)
-        .ToListAsync();
-
-    var report = await _context.Reports
-        .Include(r => r.Details)
-            .ThenInclude(d => d.ReportActivities)
-                .ThenInclude(ra => ra.WeeklyActivity)
-        .Include(r => r.CreatedBy)
-        .FirstOrDefaultAsync(r => r.Id == id);
-
-    if (report == null) return NotFound();
-
-    // Seguridad extra: solo permitir si el reporte fue creado por un JCF asignado
-    if (!jcfAssignments.Contains(report.CreatedById))
-    {
-        return Forbid(); // o Unauthorized()
-    }
-
-    return View(report); // Renderiza SubmittedReportDetails.cshtml
-}
-
-
-
-
-
+            return View(report);
+        }
     }
 }

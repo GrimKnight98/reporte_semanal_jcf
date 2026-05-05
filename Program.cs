@@ -1,7 +1,7 @@
 using DemoMvc.Data;
-using DemoMvc.Models; // ApplicationUser
-using Microsoft.EntityFrameworkCore;
+using DemoMvc.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 
@@ -11,7 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection")
                        ?? "Data Source=app.db";
 
-// Add services
+// -----------------------------
+// Servicios
+// -----------------------------
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -19,7 +22,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString));
 
-// Identity configuration
+// Identity (login tradicional)
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -28,12 +31,15 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
 
-// 👉 Registro de DinkToPdf
+// DinkToPdf
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
 
-// --- Seed initial data (roles and admin user)
+// -----------------------------
+// Seeder inicial
+// -----------------------------
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -41,22 +47,20 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        // Aplica migraciones ANTES del seeder
         context.Database.Migrate();
-
-        // Ejecuta seeder
         await SeedData.InitializeAsync(services);
-
-        Console.WriteLine(" Seeder ejecutado correctamente.");
+        Console.WriteLine("Seeder ejecutado correctamente.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($" Error seeding data: {ex.Message}");
+        Console.WriteLine($"Error seeding data: {ex.Message}");
     }
 }
-// ---
 
-// Configure pipeline
+// -----------------------------
+// Middleware
+// -----------------------------
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -70,6 +74,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// -----------------------------
+// Rutas
+// -----------------------------
 
 app.MapControllerRoute(
     name: "default",
