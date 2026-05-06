@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets/favicon.ico"
     },
     {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/icons/icon-192.png",
+      "PackagePath": "staticwebassets/icons/icon-192.png"
+    },
+    {
       "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/js/site.js",
       "PackagePath": "staticwebassets/js/site.js"
     },
@@ -243,6 +247,14 @@
     {
       "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery/dist/jquery.min.map",
       "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/manifest.json",
+      "PackagePath": "staticwebassets/manifest.json"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/sw.js",
+      "PackagePath": "staticwebassets/sw.js"
     },
     {
       "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/img/Sin título.png",

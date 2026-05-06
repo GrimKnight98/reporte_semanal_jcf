@@ -1,0 +1,305 @@
+{
+  "Files": [
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/obj/Release/net8.0/scopedcss/projectbundle/DemoMvc.bundle.scp.css",
+      "PackagePath": "staticwebassets/DemoMvc.bundle.scp.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/favicon.ico",
+      "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/LICENSE",
+      "PackagePath": "staticwebassets/lib/bootstrap"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/LICENSE.txt"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation/LICENSE.md",
+      "PackagePath": "staticwebassets/lib/jquery-validation/LICENSE.md"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation/dist/additional-methods.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation/dist/additional-methods.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation/dist/jquery.validate.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery-validation/dist/jquery.validate.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery/dist/jquery.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery/dist/jquery.min.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.js"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/lib/jquery/dist/jquery.min.map",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/img/Sin título.png",
+      "PackagePath": "staticwebassets/uploads/img/Sin título.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/logos/logo-dark.png",
+      "PackagePath": "staticwebassets/uploads/logos/logo-dark.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/logos/logo-light.png",
+      "PackagePath": "staticwebassets/uploads/logos/logo-light.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png",
+      "PackagePath": "staticwebassets/uploads/signatures/06b33b0d-f5e9-4ffc-9c0c-d1f78a638fcc_signature.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/26208f3e-88ed-4b26-b0f6-93e0a3be3069.png",
+      "PackagePath": "staticwebassets/uploads/signatures/26208f3e-88ed-4b26-b0f6-93e0a3be3069.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/2cc57615-d59e-4766-8a93-a2dea756425b_signature.png",
+      "PackagePath": "staticwebassets/uploads/signatures/2cc57615-d59e-4766-8a93-a2dea756425b_signature.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/45d38c91-f565-4979-824e-881947f32d66.png",
+      "PackagePath": "staticwebassets/uploads/signatures/45d38c91-f565-4979-824e-881947f32d66.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/67d09240-88b5-4aee-8118-62f4449c37c8_signature.png",
+      "PackagePath": "staticwebassets/uploads/signatures/67d09240-88b5-4aee-8118-62f4449c37c8_signature.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/7713754d-f327-4b39-954c-c4cc22d3b84d.png",
+      "PackagePath": "staticwebassets/uploads/signatures/7713754d-f327-4b39-954c-c4cc22d3b84d.png"
+    },
+    {
+      "Id": "/workspaces/vscode-remote-try-dotnet/DemoMvc/wwwroot/uploads/signatures/9f6e7d7a-5484-4db1-9d71-3fab00c4ef31.png",
+      "PackagePath": "staticwebassets/uploads/signatures/9f6e7d7a-5484-4db1-9d71-3fab00c4ef31.png"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.DemoMvc.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.build.DemoMvc.props",
+      "PackagePath": "build\\DemoMvc.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildMultiTargeting.DemoMvc.props",
+      "PackagePath": "buildMultiTargeting\\DemoMvc.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildTransitive.DemoMvc.props",
+      "PackagePath": "buildTransitive\\DemoMvc.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

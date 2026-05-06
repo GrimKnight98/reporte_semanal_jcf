@@ -24,6 +24,11 @@
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DemoMvc.styles.css" asp-append-version="true" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="~/manifest.json">
+    <meta name="theme-color" content="#0078D7">
+
     
 
     <style>
@@ -261,6 +266,15 @@
             toastList.forEach(toast => toast.show());
         });
     </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registrado', reg))
+                .catch(err => console.error('Error registrando SW', err));
+        }
+    </script>
+
 
 </body>
 </html>

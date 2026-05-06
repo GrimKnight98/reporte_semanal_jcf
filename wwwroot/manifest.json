@@ -1,0 +1,21 @@
+{
+  "name": "KCM-JCF Reports",
+  "short_name": "Reports",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0078D7",
+  "description": "Aplicacion que eficentiza la consulta y creacion de reportes de KCM y JCF",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
